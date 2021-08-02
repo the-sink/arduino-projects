@@ -27,12 +27,12 @@ const int digits[10][7]{
 
 String a;
 
-void display_digit(int disp[], int d){
+void display_digit(int dispSegment[], int d){
   for (int i = 0; i < 7; i++){
     if (digits[d][i] == 0){
-      disp.pinOn(disp[i]);
+      disp.pinOn(dispSegment[i]);
     } else {
-      disp.pinOff(disp[i]);
+      disp.pinOff(dispSegment[i]);
     }
   }
 }
