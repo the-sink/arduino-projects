@@ -5,7 +5,7 @@
 #define DHTPIN 7
 #define DHTTYPE DHT22
 
-shiftOutX regOne(9, 8, 10, MSBFIRST, 2);
+shiftOutX disp(9, 8, 10, MSBFIRST, 2);
 DHT dht(DHTPIN, DHTTYPE);
 
 // register pin numbers for displays
@@ -30,9 +30,9 @@ String a;
 void display_digit(int disp[], int d){
   for (int i = 0; i < 7; i++){
     if (digits[d][i] == 0){
-      regOne.pinOn(disp[i]);
+      disp.pinOn(disp[i]);
     } else {
-      regOne.pinOff(disp[i]);
+      disp.pinOff(disp[i]);
     }
   }
 }
@@ -45,17 +45,17 @@ void display_number(int n, bool dot){
   display_digit(dispTwo, one);
 
   if (dot) {
-    regOne.pinOff(shPin13);
+    disp.pinOff(shPin13);
   } else {
-    regOne.pinOn(shPin13);
+    disp.pinOn(shPin13);
   }
 }
 
 void setup() {
   dht.begin();
-  regOne.allOff();
+  disp.allOff();
   delay(1000);
-  regOne.allOn();
+  disp.allOn();
 }
 
 void loop() {
