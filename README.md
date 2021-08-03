@@ -1,3 +1,3 @@
 # arduino-projects
 
-A storage location for all of my (still existing) arduino projects.
+A storage location for all of my recent arduino projects.
