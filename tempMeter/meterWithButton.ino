@@ -1,4 +1,4 @@
-// This is a copy of main.ino but instead of the readings switching every 5 seconds, it samples both values every 2 seconds and has a button wired to pin D3.
+// This is a copy of meterCycle.ino but instead of the readings switching every 5 seconds, it samples both values every 2 seconds and has a button wired to pin D3.
 // This button pulls the pin low, triggering an interrupt and switching the display between temperature and humidity (humidity = dot indicator visible).
 
 #include <ShiftOutX.h>
