@@ -7,3 +7,5 @@ Parts:
 - ESP32
 - RFP30N06LE N-Channel MOSFET
 - 4x DC gearbox motor (TT motor)
+
+**TODO:** secret.h
