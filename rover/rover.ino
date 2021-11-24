@@ -1,11 +1,11 @@
 #define IN1 32
 #define IN2 33
-#define IN3 25
-#define IN4 26
+#define IN3 4
+#define IN4 16
 #define ENA 27
 #define ENB 14
-#define POWER 12
-#define BUZZER 13
+#define POWER 13
+#define BUZZER 0
 
 //    Left motor truth table
 //  ENA         IN1               IN2         Description  
@@ -32,28 +32,18 @@
 //  backward      backward        Car is running backwards
 
 #include <WiFi.h>
-#include <analogWrite.h>
+#include "analogWrite.h"
 
-// Replace with your network credentials
-const char* ssid = "";
-const char* password = "";
 WiFiServer server(80);
 
 String header;
 
 unsigned long previousMillis = 0;
-unsigned long interval = 300;
 unsigned long currentTime = millis();
 unsigned long previousTime = 0;
 unsigned long timeoutTime = 2000;
 
 bool fault = false;
-
-void play_tone(int freq, int len) {
-  ledcWriteTone(0,freq);
-  delay(len);
-  ledcWrite(0, 0);
-}
 
 void stop_movement() {
   digitalWrite(ENA, LOW);
@@ -152,55 +142,44 @@ void forward() {
 
 void power() {
   digitalWrite(POWER, !digitalRead(POWER));
-  play_tone(440, 25);
 }
 
 void setup()
 {
-pinMode(ENA, OUTPUT);
-pinMode(ENB, OUTPUT);
-pinMode(IN1, OUTPUT);
-pinMode(IN2, OUTPUT);
-pinMode(IN3, OUTPUT);
-pinMode(IN4, OUTPUT);
-pinMode(POWER, OUTPUT);
-pinMode(BUZZER, OUTPUT);
-pinMode(2, OUTPUT);
-
-//WiFi.mode(WIFI_MODE_APSTA);
-WiFi.softAP("rover");
-
-digitalWrite(ENA, LOW);
-digitalWrite(ENB, LOW);
-digitalWrite(POWER, LOW);
-
-ledcSetup(0,1E5,12);
-ledcAttachPin(BUZZER,0);
-
-digitalWrite(2, LOW);
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(POWER, OUTPUT);
+  //pinMode(BUZZER, OUTPUT);
+  pinMode(2, OUTPUT);
   
-Serial.begin(115200);
-//Serial.print("Connecting to ");
-//Serial.println(ssid);
-//WiFi.begin(ssid, password);
-//while (WiFi.status() != WL_CONNECTED) {
+  Serial.begin(115200);
+  
+  WiFi.softAP("rover");
+  
+  digitalWrite(ENA, LOW);
+  digitalWrite(ENB, LOW);
+  digitalWrite(POWER, LOW);
+  
+  //ledcSetup(0,1E5,12);
+  //ledcAttachPin(BUZZER,0);
+  
+  digitalWrite(2, LOW);
+  
   delay(500);
-//  Serial.print(".");
-//}
-// Print local IP address and start web server
-Serial.println("");
-Serial.println("WiFi connected.");
-Serial.println("IP address: ");
-Serial.println(WiFi.localIP());
-Serial.print("IP as soft AP: ");
-Serial.println(WiFi.softAPIP());
-server.begin();
-digitalWrite(2, HIGH);
-play_tone(440, 30);
-delay(20);
-play_tone(440, 30);
-delay(500);
-digitalWrite(2, LOW);
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("IP as soft AP: ");
+  Serial.println(WiFi.softAPIP());
+  server.begin();
+  digitalWrite(2, HIGH);
+  delay(500);
+  digitalWrite(2, LOW);
 }
 
 
@@ -231,6 +210,7 @@ void loop()
             digitalWrite(2, LOW);
             
             // turns the GPIOs on and off
+            Serial.println(header);
             if (header.indexOf("GET /forward") >= 0) {
               forward();
             } else if (header.indexOf("GET /backward") >= 0) {
@@ -271,6 +251,7 @@ void loop()
             client.println("<p style=\"user-select: none;\"><button class=\"button\" id=\"forwardleft\">FL</button><button class=\"button\" id=\"forward\">F</button><button class=\"button\" id=\"forwardright\">FR</button></p>");
             client.println("<p style=\"user-select: none;\"><button class=\"button\" id=\"left\">L</button><button class=\"button\" id=\"stop\">S</button><button class=\"button\" id=\"right\">R</button></p>");
             client.println("<p style=\"user-select: none;\"><button class=\"button\" id=\"backwardleft\">BL</button><button class=\"button\" id=\"backward\">B</button><button class=\"button\" id=\"backwardright\">BR</button></p>");
+            client.println("<p style=\"user-select: none;\"><button class=\"button\" id=\"power\">Light On/Off</button></p>");
 
             client.println("<p>Buttons only work on mobile devices.</p>");
 
@@ -283,11 +264,14 @@ void loop()
             client.println("console.log(\"/\" + element.id);");
             client.println("xmlHttp.open( \"GET\", \"/\" + element.id);");
             client.println("xmlHttp.send(null);");
+            client.println("console.log(element.clicked);");
             client.println("});");
             client.println("element.addEventListener(\"touchend\", function(){");
+            client.println("setTimeout(function(){");
             client.println("console.log(\"/stop\");");
             client.println("xmlHttp.open( \"GET\", \"/stop\");");
             client.println("xmlHttp.send(null);");
+            client.println("}, 100);");
             client.println("});");
             client.println("});");
             client.println("</script>");
